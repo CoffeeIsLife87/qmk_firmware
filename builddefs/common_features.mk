@@ -634,7 +634,9 @@ ifeq ($(strip $(XAP_ENABLE)), yes)
     OPT_DEFS += -DXAP_ENABLE
     OPT_DEFS += -DBOOTLOADER_JUMP_SUPPORTED
     VPATH += $(QUANTUM_DIR)/xap
-    SRC += $(QUANTUM_DIR)/xap/xap.c $(QUANTUM_DIR)/xap/xap_handlers.c
+    SRC +=  $(QUANTUM_DIR)/xap/xap.c \
+            $(QUANTUM_DIR)/xap/xap_handlers.c \
+            $(QUANTUM_DIR)/xap/xap_direct_lighting.c
 endif
 
 VALID_MAGIC_TYPES := yes

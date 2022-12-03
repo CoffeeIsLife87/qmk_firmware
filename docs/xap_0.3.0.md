@@ -211,6 +211,8 @@ This subsystem allows for control over the rgb matrix subsystem.
 | Get Config | `0x06 0x04 0x03` |  | __Response:__<br>&nbsp;&nbsp;&nbsp;&nbsp;* enable: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* mode: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* hue: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* sat: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* val: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* speed: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* flags: `u8` | Query the current config.|
 | Set Config | `0x06 0x04 0x04` |  | __Request:__<br>&nbsp;&nbsp;&nbsp;&nbsp;* enable: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* mode: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* hue: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* sat: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* val: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* speed: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* flags: `u8` | Set the current config.|
 | Save Config | `0x06 0x04 0x05` |  |  | Save the current config.|
+| Direct set multiple LEDs | `0x06 0x04 0x06` |  | __Request:__<br>&nbsp;&nbsp;&nbsp;&nbsp;* starting_led: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* ending_led: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* colors: `u8[(ending_led - starting_led) * 3]` | Sets multiple LEDs for direct mode|
+| Direct set single LED | `0x06 0x04 0x07` |  | __Request:__<br>&nbsp;&nbsp;&nbsp;&nbsp;* led: `u8`<br>&nbsp;&nbsp;&nbsp;&nbsp;* colors: `u8[3]` | Sets single LED for direct mode|
 
 
 ## Broadcast messages

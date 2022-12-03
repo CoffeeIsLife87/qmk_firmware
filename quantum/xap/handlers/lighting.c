@@ -156,4 +156,20 @@ bool xap_respond_save_rgb_matrix_config(xap_token_t token, const void *data, siz
 
     return xap_respond_success(token);
 }
+
+#   if ((defined(ENABLE_RGB_MATRIX_XAP_DIRECT_MODE)))
+#       include "xap_direct_lighting.h"
+
+bool xap_respond_direct_mode_set_single_led(xap_token_t token, const void *data, size_t length) {
+    xap_direct_lighting_set_single_led((const unsigned char*)data, length);
+    return xap_respond_success(token);
+}
+
+bool xap_respond_direct_mode_set_multiple_leds(xap_token_t token, const void *data, size_t length) {
+    xap_direct_lighting_set_multiple_leds((const unsigned char*)data, length);
+    return xap_respond_success(token);
+}
+
+#   endif
+
 #endif

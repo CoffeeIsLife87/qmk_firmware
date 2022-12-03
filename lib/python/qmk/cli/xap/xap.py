@@ -242,6 +242,12 @@ class XAPShell(cmd.Cmd):
 
             ret = self.device.int_transaction(XAPRoutes.LIGHTING_RGB_MATRIX_GET_ENABLED_EFFECTS)
             print(f'XAPEffectRgbMatrix(enabled={bin(ret)})')
+    
+    def do_direct_set_multi(self, line):
+        self.device.transaction(XAPRoutes().LIGHTING_RGB_MATRIX_SET_MULTIPLE_LED, bytearray([10, 20, 0x00, 0x00, 0x00]))
+
+    def do_direct_set_single(self, line):
+        self.device.transaction(XAPRoutes().LIGHTING_RGB_MATRIX_SET_SINGLE_LED, bytearray([20, 0xFF, 0x00, 0xFF]))
 
 
 @cli.argument('-v', '--verbose', arg_only=True, action='store_true', help='Turns on verbose output.')
