@@ -6,13 +6,22 @@ RGB_MATRIX_EFFECT(SNAKE)
 #define SNAKE_LENGTH 3
 #endif
 
+static bool resetting = false;
 static int snake_progression = 0;
 static int snake_row = 0;
 static int snake_col = 0;
 static int snake_tail_pos[SNAKE_LENGTH + 1] = {0};
 
-#define upper_bound ((snake_progression > setup_color.v ? setup_color.v : snake_progression))
+#ifdef SPLIT_KEYBOARD
+static bool left_side = true;
+static bool ok = true;
+const int split_offset = MATRIX_ROWS / 2;
+#define reversed ( (snake_row >= split_offset) ? (((snake_row - split_offset) % 2) == 1) : ((snake_row % 2) == 1) )
+#else
 #define reversed ((snake_row % 2) == 1)
+#endif
+
+#define upper_bound ((snake_progression > setup_color.v ? setup_color.v : snake_progression))
 
 bool SNAKE(effect_params_t* params) {
     RGB_MATRIX_USE_LIMITS(led_min, led_max);
@@ -55,14 +64,42 @@ bool SNAKE(effect_params_t* params) {
         for (int tail_ndx = SNAKE_LENGTH; tail_ndx > 0; tail_ndx -= 1) {
             snake_tail_pos[tail_ndx] = snake_tail_pos[tail_ndx - 1];
         }
-        if ((snake_col >= (MATRIX_COLS)) || (reversed && (snake_col < 0))) {
+        
+        if (resetting) {
+            snake_row -= 1;
+            snake_col = 0;
+            if (snake_row == 0) {
+                resetting = false;
+            }
+        }
+
+        if ((!resetting) && ((snake_col >= (MATRIX_COLS)) || (reversed && (snake_col < 0)))) {
             snake_row += 1;
+            #ifdef SPLIT_KEYBOARD
+            if (left_side) {
+                if (ok) {
+                    snake_row += split_offset;
+                    ok = false;
+                    left_side = false;
+                }
+                ok = true;
+            } else {
+                if (ok) {
+                    snake_row -= split_offset;
+                    ok = false;
+                    left_side = true;
+                }
+                ok = true;
+            }
+            #endif
             snake_col = (reversed ? (MATRIX_COLS - 1) : 0);
         }
         if (snake_row >= MATRIX_ROWS) {
-            snake_row = 0;
-            snake_col = 0;
+            resetting = true;
+            // Not entirely sure why this works so there might be a cleaner solution
+            snake_row = MATRIX_ROWS - 2;
         }
+
         snake_progression = 0;
     }
 
