@@ -3,7 +3,12 @@ RGB_MATRIX_EFFECT(SNAKE)
 #    ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 
 #ifndef SNAKE_LENGTH
-#define SNAKE_LENGTH 3
+#define SNAKE_LENGTH 7
+
+#    if SNAKE_LENGTH < 1
+#        error SNAKE_LENGTH MUST BE LONGER THAN 0
+#    endif
+
 #endif
 
 static bool resetting = false;
