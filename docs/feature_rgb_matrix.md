@@ -594,6 +594,9 @@ enum rgb_matrix_effects {
     RGB_MATRIX_SOLID_SPLASH,        // Hue & value pulse away from a single key hit then fades value out
     RGB_MATRIX_SOLID_MULTISPLASH,   // Hue & value pulse away from multiple key hits then fades value out
 #endif
+#if defined(XAP_ENABLE)
+    RGB_MATRIX_XAP_DIRECT
+#endif
     RGB_MATRIX_EFFECT_MAX
 };
 ```
@@ -659,6 +662,11 @@ You can enable a single effect by defining `ENABLE_[EFFECT_NAME]` in your `confi
 
 ?> These modes also require the `RGB_MATRIX_KEYPRESSES` or `RGB_MATRIX_KEYRELEASES` define to be available.
 
+| XAP effects                           | Description                     |
+|---------------------------------------|---------------------------------|
+|`#define ENABLE_RGB_MATRIX_XAP_DIRECT` | Enables `RGB_MATRIX_XAP_DIRECT` |
+
+?> if you have `XAP_DIRECT_USE_ARRAY` enabled then colors sent to the device are stored in memory for recovering from indicators
 
 ### RGB Matrix Effect Typing Heatmap :id=rgb-matrix-effect-typing-heatmap
 

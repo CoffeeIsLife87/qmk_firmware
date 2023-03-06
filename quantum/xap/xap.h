@@ -29,6 +29,13 @@
 #    define XAP_SUBSYSTEM_VERSION_USER 0
 #endif
 
+#if (defined(RGB_MATRIX_ENABLE) && \
+    defined(ENABLE_RGB_MATRIX_XAP_DIRECT) && \
+    defined(XAP_DIRECT_USE_ARRAY))
+
+    extern RGB xap_direct_lighting_led_colors[RGB_MATRIX_LED_COUNT];
+#endif
+
 bool xap_respond_success(xap_token_t token);
 void xap_respond_failure(xap_token_t token, xap_response_flags_t response_flags);
 bool xap_respond_u32(xap_token_t token, uint32_t value);

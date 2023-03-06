@@ -121,5 +121,6 @@ class RgbMatrixModes(IntEnum):
     MULTISPLASH = 0x29
     SOLID_SPLASH = 0x2A
     SOLID_MULTISPLASH = 0x2B
+    XAP_DIRECT = 0x2C
 
 # noqa: W391

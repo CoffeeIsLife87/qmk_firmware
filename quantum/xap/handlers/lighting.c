@@ -156,4 +156,98 @@ bool xap_respond_save_rgb_matrix_config(xap_token_t token, const void *data, siz
 
     return xap_respond_success(token);
 }
+
+#   if defined(ENABLE_RGB_MATRIX_XAP_DIRECT)
+#       if defined(XAP_DIRECT_USE_ARRAY)
+
+RGB xap_direct_lighting_led_colors[RGB_MATRIX_LED_COUNT] = {[0 ... RGB_MATRIX_LED_COUNT - 1] = {0, 0, 0}};
+
+bool xap_respond_direct_mode_set_multiple_leds(xap_token_t token, const void *data, size_t length) {
+    const unsigned char* cdata = (const unsigned char*)data;
+    // 5 is the minimum to set at least 1 LED
+    if (length < 5)
+        return false;
+
+    int starting_led = cdata[0];
+    int led_count = cdata[1];
+
+    bool single_color = (length == 5);
+
+    // Check bounds on the starting point
+    if ((starting_led < 0) || (starting_led >= RGB_MATRIX_LED_COUNT))
+        return false;
+
+    // Check bounds on the ending point
+    if ((led_count < 1) || (starting_led + led_count) >= RGB_MATRIX_LED_COUNT)
+        return false;
+
+    // Make sure we have enough data to actually set the LEDs
+    if (((length - 2) < (led_count * 3)) && (!single_color))
+        return false;
+
+    // The 2 in `cdata[2 ...]` is an offset so that we don't read an LED position instead of colors
+    // The `(led_pos * 3)` is added when we have more than 1 color to set.
+    // Otherwise, we add `0` so that we read the same spot for the rest of the LEDs
+    for (int led_pos = 0; led_pos < led_count; led_pos++) {
+        int starting_pos = 2 + (single_color ? 0 : (led_pos * 3));
+        // This way is fine, but I don't know if it wastes cycles casting
+        xap_direct_lighting_led_colors[starting_led + led_pos]
+            = (RGB){ .r = cdata[starting_pos    ],
+                     .g = cdata[starting_pos + 1],
+                     .b = cdata[starting_pos + 2]};
+
+        // Using this doesn't take into account that R, G, and B might be in different spots
+        //memcpy( &xap_direct_lighting_led_colors[starting_led + led_pos],
+        //        &cdata[2 + (single_color ? 0 : (led_pos * 3)) ],
+        //        (sizeof(unsigned char) * 3));
+    }
+
+    return xap_respond_success(token);
+}
+
+#       else // ENABLE_RGB_MATRIX_XAP_DIRECT
+
+bool xap_respond_direct_mode_set_multiple_leds(xap_token_t token, const void *data, size_t length) {
+    if (rgb_matrix_get_mode() != RGB_MATRIX_XAP_DIRECT)
+        return false;
+
+    const unsigned char* cdata = (const unsigned char*)data;
+    // 5 is the minimum to set at least 1 LED
+    if (length < 5)
+        return false;
+
+    int starting_led = cdata[0];
+    int led_count = cdata[1];
+
+    bool single_color = (length == 5);
+
+    // Check bounds on the starting point
+    if ((starting_led < 0) || (starting_led >= RGB_MATRIX_LED_COUNT))
+        return false;
+
+    // Check bounds on the ending point
+    if ((starting_led + led_count) >= RGB_MATRIX_LED_COUNT)
+        return false;
+
+    // Make sure we have enough data to actually set the LEDs
+    if (((length - 2) < (led_count * 3)) && (!single_color))
+        return false;
+
+    int starting_led_pos = 0;
+
+    // The 2 in `cdata[2 ...]` is an offset so that we don't read an LED position instead of colors
+    // The `(led_pos * 3)` is added when we have more than 1 color to set.
+    // Otherwise, we add `0` so that we read the same spot for the rest of the LEDs
+    for (int led_pos = 0; led_pos < led_count; led_pos++) {
+        starting_led_pos = 2 + (single_color ? 0 : (led_pos * 3));
+        RGB rgb = (RGB){.r = cdata[starting_led_pos + 0],
+                        .g = cdata[starting_led_pos + 1],
+                        .b = cdata[starting_led_pos + 2]};
+        rgb_matrix_set_color(starting_led + led_pos, rgb.r, rgb.g, rgb.b);
+    }
+    return xap_respond_success(token);
+}
+#       endif // XAP_DIRECT_USE_ARRAY
+#   endif // ENABLE_RGB_MATRIX_XAP_DIRECT
+
 #endif
