@@ -178,7 +178,7 @@ bool xap_respond_direct_mode_set_multiple_leds(xap_token_t token, const void *da
         return false;
 
     // Check bounds on the ending point
-    if ((led_count < 1) || (starting_led + led_count) >= RGB_MATRIX_LED_COUNT)
+    if ((led_count < 1) || (starting_led + led_count) > RGB_MATRIX_LED_COUNT)
         return false;
 
     // Make sure we have enough data to actually set the LEDs
@@ -226,7 +226,7 @@ bool xap_respond_direct_mode_set_multiple_leds(xap_token_t token, const void *da
         return false;
 
     // Check bounds on the ending point
-    if ((starting_led + led_count) >= RGB_MATRIX_LED_COUNT)
+    if ((starting_led + led_count) > RGB_MATRIX_LED_COUNT)
         return false;
 
     // Make sure we have enough data to actually set the LEDs
