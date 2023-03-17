@@ -84,55 +84,45 @@ const uint16_t PROGMEM keymaps[_END][MATRIX_ROWS][MATRIX_COLS] = {
     #endif // MOUSEKEY_ENABLE
 };
 
+#ifdef RGB_MATRIX_ENABLE
+
 #define LAYER (get_highest_layer(layer_state))
 #define LAYER_SIZE (MATRIX_ROWS * MATRIX_COLS)
-#define CHECK_LED() \
-    if ((i >= RGB_MATRIX_LED_COUNT) \
-    || ((g_led_config.flags[pos] == LED_FLAG_NONE) || (g_led_config.flags[pos] == LED_FLAG_UNDERGLOW))) \
-        continue
-
-#ifdef RGB_MATRIX_ENABLE
+#define BRIGHTNESS rgb_matrix_config.hsv.v
 
     #ifdef UNDERGLOW_DISABLE
     void keyboard_pre_init_user(void) {
-
         for (int key_id = 0; key_id < RGB_MATRIX_LED_COUNT; key_id++ ) {
             if (g_led_config.flags[key_id] == LED_FLAG_UNDERGLOW) {
                 g_led_config.flags[key_id] = LED_FLAG_NONE;
             }
         }
     }
-    #endif
+    #endif // UNDERGLOW_DISABLE
 
     bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-        if (LAYER != _MAIN) {
+        if (LAYER == _MAIN) {return false;}
 
-            int DimmedMax = UINT8_MAX - (UINT8_MAX - rgb_matrix_config.hsv.v);
+        for (uint8_t i = led_min; i <= led_max; i++) {
+            uint8_t pos = ((uint8_t*)g_led_config.matrix_co)[i];
+            if (!HAS_ANY_FLAGS(g_led_config.flags[pos], (LED_FLAG_MODIFIER | LED_FLAG_KEYLIGHT))) {continue;}
+            uint16_t KC = pgm_read_word(&((uint16_t*)keymaps)[(LAYER_SIZE * LAYER) + i]);
 
-            for (uint8_t i = led_min; i <= led_max; i++) {
-
-                uint8_t pos = ((uint8_t*)g_led_config.matrix_co)[i];
-
-                CHECK_LED(); // Check LED before moving on
-                uint16_t KC = pgm_read_word(&((uint16_t*)keymaps)[(LAYER_SIZE * LAYER) + i]);
-
-                if (KC == KC_NO) {
-                    RGB_MATRIX_INDICATOR_SET_COLOR(pos, 0, 0, 0 );
-                }
-
-                #ifdef DYNAMIC_MACRO_ENABLE
-                    else if (KC == MCR_SWT) {
-                        if (!MACRO1) {
-                            RGB_MATRIX_INDICATOR_SET_COLOR(pos, 0, DimmedMax, DimmedMax);
-                        }
-                    } else if (KC == MCR_REC) {
-                        if (RECORDING) {
-                            RGB_MATRIX_INDICATOR_SET_COLOR(pos, DimmedMax, 0, 0);
-                        }
-                    }
-                #endif
-
+            if (KC == KC_NO) {
+                RGB_MATRIX_INDICATOR_SET_COLOR(pos, 0, 0, 0 );
             }
+
+            #ifdef DYNAMIC_MACRO_ENABLE
+                else if (KC == MCR_SWT) {
+                    if (!MACRO1) {
+                        RGB_MATRIX_INDICATOR_SET_COLOR(pos, 0, BRIGHTNESS, BRIGHTNESS);
+                    }
+                } else if (KC == MCR_REC) {
+                    if (RECORDING) {
+                        RGB_MATRIX_INDICATOR_SET_COLOR(pos, BRIGHTNESS, 0, 0);
+                    }
+                }
+            #endif
         }
     return false;
     }
@@ -141,8 +131,8 @@ const uint16_t PROGMEM keymaps[_END][MATRIX_ROWS][MATRIX_COLS] = {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     #ifdef DYNAMIC_MACRO_ENABLE
-        if (keycode == MCR_REC) keycode = REC;
-        if (keycode == MCR_PLY) keycode = PLY;
+        if (keycode == MCR_REC) {keycode = REC;}
+        if (keycode == MCR_PLY) {keycode = PLY;}
         if (!process_dynamic_macro(keycode, record)) {
             REC = (MACRO1 ? DM_REC1 : DM_REC2);
             return false;
