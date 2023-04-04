@@ -91,3 +91,5 @@
 
 #    define MK_3_SPEED
 #endif
+
+#define DVORAK_ENABLE

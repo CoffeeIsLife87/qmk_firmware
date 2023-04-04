@@ -18,6 +18,9 @@ enum custom_keycodes {
 
 enum layout_names {
     _MAIN = 0,       // Keys Layout: The main keyboard layout that has all the characters
+    #ifdef DVORAK_ENABLE
+    _DVORAK,
+    #endif
     _SUB,            // Extension to Main
     _CTR,            // Macros, RGB, Audio controls, layer access. More or less the control center of my keyboard
     #ifdef MOUSEKEY_ENABLE
@@ -25,6 +28,12 @@ enum layout_names {
     #endif // MOUSEKEY_ENABLE
     _END,
 };
+
+#ifdef DVORAK_ENABLE
+#define TOG_DVK TG(_DVORAK)
+#else
+#define TOG_DVK XXXXXXX
+#endif
 
 #ifdef MOUSEKEY_ENABLE
 #include "action.h"
@@ -62,6 +71,14 @@ const uint16_t PROGMEM keymaps[_END][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LSFT, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_ENT ,
         KC_LCTL, KC_LGUI, XXXXXXX,KC_LALT ,MO(_SUB),      KC_SPC     ,MO(_CTR), KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT
     ),
+    #ifdef DVORAK_ENABLE
+    [_DVORAK] = LAYOUT_planck_mit(
+        _______, KC_QUOT, KC_COMM, KC_DOT , KC_P   , KC_Y   , KC_F   , KC_G   , KC_C   , KC_R   , KC_L   , _______,
+        _______, KC_A   , KC_O   , KC_E   , KC_U   , KC_I   , KC_D   , KC_H   , KC_T   , KC_N   , KC_S   , KC_SLSH,
+        _______, KC_SCLN, KC_Q   , KC_J   , KC_K   , KC_X   , KC_B   , KC_M   , KC_W   , KC_V   , KC_Z   , _______,
+        _______, _______, _______,_______ ,_______ ,      _______     ,_______, _______, _______,_______ , _______
+    ),
+    #endif
     [_SUB] = LAYOUT_planck_mit(
         KC_GRV , KC_1   , KC_2   , KC_3   , KC_4   , KC_5   , KC_6   , KC_7   , KC_8   , KC_9   , KC_0   , KC_DEL,
         XXXXXXX, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_MINS, KC_EQL , KC_LBRC, KC_RBRC, KC_PGUP,
@@ -72,7 +89,7 @@ const uint16_t PROGMEM keymaps[_END][MATRIX_ROWS][MATRIX_COLS] = {
         XXXXXXX, RGB_SPD, RGB_VAI, RGB_SPI, RGB_HUI, RGB_SAI, XXXXXXX, XXXXXXX, KC_VOLU, XXXXXXX, XXXXXXX, MCR_REC,
         XXXXXXX, RGB_RMOD,RGB_VAD, RGB_MOD, RGB_HUD, RGB_SAD, XXXXXXX, KC_MPRV, KC_MPLY, KC_MNXT, XXXXXXX, MCR_PLY,
         XXXXXXX, XXXXXXX, RGB_TOG, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_VOLD, XXXXXXX, XXXXXXX, MCR_SWT,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,      TOG_MSE,     _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
+        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, TOG_DVK,      TOG_MSE,     _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
     )
     #ifdef MOUSEKEY_ENABLE
     ,[_MSE] = LAYOUT_planck_mit(
