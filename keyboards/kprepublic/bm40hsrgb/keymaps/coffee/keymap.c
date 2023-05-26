@@ -168,23 +168,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             return false;
         #endif // DYNAMIC_MACRO_ENABLE
 
-        #if defined(RGB_MATRIX_ENABLE) && defined(RGBLIGHT_ENABLE) // this only needs to be defined if both are enabled
-        case RGB_TOG: // We can intercept this keycode ig? Cool :)
-            if (record->event.pressed) {
-                if (rgb_matrix_is_enabled()) {
-                    rgb_matrix_disable/*_noeeprom*/();
-                    rgblight_enable/*_noeeprom*/();
-                } else if (rgblight_is_enabled()) {
-                    rgb_matrix_disable/*_noeeprom*/();
-                    rgblight_disable/*_noeeprom*/();
-                } else {
-                    rgb_matrix_enable/*_noeeprom*/();
-                    rgblight_disable/*_noeeprom*/();
-                }
-            }
-            return false;
-        #endif // RGB_MATRIX_ENABLE && RGBLIGHT_ENABLE
-
         default:
             return true; //Process all other keycodes normally
     }
